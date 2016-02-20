@@ -37,12 +37,12 @@ mapping = { "SE-426": "426",                #Erased 'SE-'
             }
 
 
-def audit_street_type(street_types, street_name):
-    m = street_type_re.search(street_name)
+def audit_type(types, name):
+    m = street_type_re.search(name)
     if m:
         street_type = m.group()
         if street_type not in expected:
-            street_types[street_type].add(street_name)
+            types[street_type].add(name)
 
 #================================================================
  #Audit postcode
@@ -58,7 +58,7 @@ def audit_post_code(osmfile):
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_post_code(tag):
-                    audit_street_type(street_types, tag.attrib['v'])
+                    audit_type(street_types, tag.attrib['v'])
     osm_file.close()
     return street_types
 
@@ -91,7 +91,7 @@ def audit_house_number(osmfile):
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_house_number(tag):
-                    audit_houseNr(street_types, tag.attrib['v'])
+                    audit_type(street_types, tag.attrib['v'])
     osm_file.close()
     return street_types
 
@@ -121,7 +121,7 @@ def test(audit,update):                             #this test gives the output 
         for name in ways:
             better_name = update(name, mapping)
             print name, "=>", better_name
-test(audit_post_code,update_post_code)
+test(audit_house_number,update_house_number)
             
 #word = 'Hello Wor(ld'
 #print re.findall(r"[\w']+",name)
