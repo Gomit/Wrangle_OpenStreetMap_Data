@@ -39,8 +39,6 @@ mapping = {}
 
 
 
-def is_street_name(elem):
-    return (elem.attrib['k'] == "addr:housenumber")
 
 
 def audit(osmfile):
@@ -56,6 +54,8 @@ def audit(osmfile):
     osm_file.close()
     return street_types
 
+def is_street_name(elem):
+    return (elem.attrib['k'] == "addr:housenumber")
 
 def update_name(name, mapping):
     array = []

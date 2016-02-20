@@ -44,25 +44,30 @@ def audit_street_type(street_types, street_name):
         if street_type not in expected:
             street_types[street_type].add(street_name)
 
+#================================================================
+ #Audit postcode
+#================================================================
 
-def is_street_name(elem):
-    return (elem.attrib['k'] == "addr:postcode")
 
 
-def audit(osmfile):
+def audit_post_code(osmfile):
     osm_file = open(osmfile, "r")
     street_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
 
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
-                if is_street_name(tag):
+                if is_post_code(tag):
                     audit_street_type(street_types, tag.attrib['v'])
     osm_file.close()
     return street_types
 
 
-def update_name(name, mapping):
+def is_post_code(elem):
+    return (elem.attrib['k'] == "addr:postcode")
+
+
+def update_post_code(name, mapping):
     array = []                          #empty array
     words = name.split(' ')             #split postcode based on empty space ' '
     for word in words:                  #for each word
@@ -72,17 +77,51 @@ def update_name(name, mapping):
     return " ".join(array)              #join the entire array
     
     return name
+ 
+#================================================================
+ #Audit house numbers
+#================================================================
+
+def audit_house_number(osmfile):
+    osm_file = open(osmfile, "r")
+
+    street_types = defaultdict(set)
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_house_number(tag):
+                    audit_houseNr(street_types, tag.attrib['v'])
+    osm_file.close()
+    return street_types
+
+def is_house_number(elem):
+    return (elem.attrib['k'] == "addr:housenumber")
+
+def update_house_number(name, mapping):
+    array = []
+    words = list(name)
+    for word in words:
+        word.title()
+        if word in mapping.keys():
+            word = mapping[word]
+        elif isinstance(word, str):
+            word = word.title()
+        array.append(word)
+    return "".join(array)
+
+    return name
 
 
-def test():                             #this test gives the output presenting the changes made
+def test(audit,update):                             #this test gives the output presenting the changes made
     st_types = audit(OSMFILE)
     pprint.pprint(dict(st_types))
 
     for st_type, ways in st_types.iteritems():
         for name in ways:
-            better_name = update_name(name, mapping)
+            better_name = update(name, mapping)
             print name, "=>", better_name
-test()
+test(audit_post_code,update_post_code)
             
 #word = 'Hello Wor(ld'
 #print re.findall(r"[\w']+",name)
