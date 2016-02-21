@@ -112,6 +112,9 @@ def update_house_number(name, mapping):
 
     return name
 
+#================================================================
+ #Test
+#================================================================
 
 def test(audit,update):                             #this test gives the output presenting the changes made
     st_types = audit(OSMFILE)
@@ -121,7 +124,7 @@ def test(audit,update):                             #this test gives the output 
         for name in ways:
             better_name = update(name, mapping)
             print name, "=>", better_name
-test(audit_house_number,update_house_number)
+test(audit_post_code,update_post_code)
             
 #word = 'Hello Wor(ld'
 #print re.findall(r"[\w']+",name)
