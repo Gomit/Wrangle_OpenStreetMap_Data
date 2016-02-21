@@ -30,9 +30,9 @@ expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square"
 
 # UPDATE THIS VARIABLE
 mapping = { "SE-42671": "42671",                #Erased 'SE-'
-            #"Hovås": "436 50",             # 'å' is not part of the UTF-8 standard apparently, 
+            u"Hov\xe5s": "43650",             # 'å' is not part of the UTF-8 standard apparently, 
                                             #the postal code for Hovås should in any case be changed somehow
-            "12":"412 74",                  #the actual postal code
+            "12":"41274",                  #the actual postal code
             "417631":"41763"               #deleted the '1' at the end
             }
 
@@ -69,23 +69,27 @@ def is_post_code(elem):
 
 def update_post_code(name, mapping):
     array = []                          #empty array
-    error_code = []
     words = name.replace(" ", "")             #split postcode based on empty space ' '
     if words in mapping.keys():      #check with the key:value pairs in the 'mapping' object above
         words = mapping[words]        #if the key matches, replace it with the new key
-        array.append(words)              #then append it to array
+    array.append(words)              #then append it to array
     return "".join(array)              #join the entire array
     return name
 
-""" 
-    tes = this_postal_code.replace(" ", "")
-    if tes.isdigit() == False:
-        error_codes.append(this_postal_code)
-    elif len(tes) != 5:
-        error_codes.append(this_postal_code)
-    else:
-        postal_codes.update([this_postal_code])
-"""
+
+def test(audit,update):                             #this test gives the output presenting the changes made
+    st_types = audit(OSMFILE)
+    #pprint.pprint(dict(st_types))
+
+    for st_type, ways in st_types.iteritems():
+        for name in ways:
+            words = name.replace(" ", "")
+            if words.isdigit() == False or len(words) != 5:
+                new_name = words
+                better_name = update(new_name, mapping)
+                print new_name, "=>", better_name
+test(audit_post_code,update_post_code)
+
 #================================================================
  #Audit house numbers
 #================================================================
@@ -106,25 +110,33 @@ def audit_house_number(osmfile):
 def is_house_number(elem):
     return (elem.attrib['k'] == "addr:housenumber")
 
-def update_house_number(name, mapping):
+def update_house_number(name):
     array = []
     words = list(name)
     for word in words:
-        word.title()
-        if word in mapping.keys():
-            word = mapping[word]
-        elif isinstance(word, str):
+        if isinstance(word, str):
             word = word.title()
         array.append(word)
     return "".join(array)
 
     return name
 
+"""
+def test(audit,update):                             #this test gives the output presenting the changes made
+    st_types = audit(OSMFILE)
+    #pprint.pprint(dict(st_types))
+
+    for st_type, ways in st_types.iteritems():
+        for name in ways:
+            better_name = update(name)
+            print name, "=>", better_name
+test(audit_house_number,update_house_number)
+"""  
 #================================================================
  #Test
 #================================================================
-#audit_post_code(OSMFILE)
 
+"""
 def test(audit,update):                             #this test gives the output presenting the changes made
     st_types = audit(OSMFILE)
     pprint.pprint(dict(st_types))
@@ -133,8 +145,9 @@ def test(audit,update):                             #this test gives the output 
         for name in ways:
             better_name = update(name, mapping)
             print name, "=>", better_name
-test(audit_post_code,update_post_code)
-      
+test(audit_house_number,update_house_number)
+"""   
+   
 #word = 'Hello Wor(ld'
 #print re.findall(r"[\w']+",name)
 
