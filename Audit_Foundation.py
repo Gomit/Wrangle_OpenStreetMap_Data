@@ -4,18 +4,6 @@ Created on Thu Feb 18 13:18:18 2016
 
 @author: merongoitom
 """
-
-"""
-Your task in this exercise has two steps:
-
-- audit the OSMFILE and change the variable 'mapping' to reflect the changes needed to fix 
-    the unexpected street types to the appropriate ones in the expected list.
-    You have to add mappings only for the actual problems you find in this OSMFILE,
-    not a generalized solution, since that may and will depend on the particular area you are auditing.
-- write the update_name function, to actually fix the street name.
-    The function takes a string with street name as an argument and should return the fixed name
-    We have provided a simple test so that you see what exactly is expected
-"""
 import xml.etree.cElementTree as ET
 from collections import defaultdict
 import re
@@ -55,8 +43,7 @@ def audit_type(types, name):
     m = street_type_re.search(name)
     if m:
         audit = m.group()
-        if audit not in expected:
-            types[audit].add(name)
+        types[audit].add(name)
 
 def audit_city_type(types, name):
     m = street_type_re.search(name)
@@ -117,14 +104,12 @@ test(audit_city,update_city_name)
 def audit_post_code(osmfile):
     osm_file = open(osmfile, "r")
     postcode_types = defaultdict(set)
-    #========= Detta kan nog tas bort i samband med 'audit_type' funktionen på rad 49 och 'expected' listen ======
     for event, elem in ET.iterparse(osm_file, events=("start",)):
-
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_post_code(tag):
                     audit_type(postcode_types, tag.attrib['v'])
-    #=========  hit kan det tas bort, Gör dessa för house number ===============
+    
     osm_file.close()
     return postcode_types
 
@@ -154,6 +139,10 @@ def test(audit,update):                                                         
             if words.isdigit() == False or len(words) != 5:
                 better_name = update(words, mapping_post_code)
                 print words, "=>", better_name
+                
+            #if words < '40010' or words > '47500':                             #check if postalcodes are within Gotheburg county
+            #    print words                                                    #Belongs to the "bad" cities listed above
+                
 test(audit_post_code,update_post_code)
 """
 #================================================================
