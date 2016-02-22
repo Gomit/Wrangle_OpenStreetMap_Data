@@ -25,42 +25,108 @@ OSMFILE = "data/gothenburg_sweden.osm"
 street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 
 
-expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
-            "Trail", "Parkway", "Commons"]
+expected_cities = ["Agnesberg","Angered","Askim",u"Asper\xf6","Billdal","Bohus",u"Br\xe4nn\xf6",u"Dons\xf6","Gunnilse",u"G\xf6teborg","Hisings backa",u"Hisings k\xe4rra",u"Hov\xe5s",u"Kung\xe4lv",u"K\xf6pstads\xf6",u"M\xf6lndal",u"N\xf6dinge","Olofstorp",u"Styrs\xf6",u"S\xe4ve","Torslanda",u"Vr\xe5ng\xf6",u"V\xe4stra fr\xf6lunda",u"\xd6cker\xf6"] 
+#expected = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
+# "Partille","Stenkullen",u"K\xe5llered","H\xe4rryda","Landvetter",u"H\xf6n\xf6","Lerum",u"M\xf6lnlycke",
+expected = ["Agnesberg"] 
+
+#Bad  = Öckerö, Landvetter, Mölnlycke, mölnlycke, Stenkullen, Härryda, Kållered, Lerum, lerum
+#       Partille, Partile, Lindome, Hönö, Jonsered, Sävedalen, Öjersjö, öjersjö
+
+#Good = Hisings kärra, Hovås, Hisings Backa, Västra Frölunda, Vâstra Frölunda, Gothenburg
 
 # UPDATE THIS VARIABLE
-mapping = { "SE-42671": "42671",                #Erased 'SE-'
-            u"Hov\xe5s": "43650",             # 'å' is not part of the UTF-8 standard apparently, 
-                                            #the postal code for Hovås should in any case be changed somehow
-            "12":"41274",                  #the actual postal code
-            "417631":"41763"               #deleted the '1' at the end
+
+mapping_city = { "Gothenburg": "Göteborg",                                           #Erased 'SE-'
+            u"Hisings K\xe4rra": u"Hisings k\xe4rra",                                                                  #the postal code for Hovås should in any case be changed somehow
+            "436 58":u"Hov\xe5s",                                                       #the actual postal code
+            u"V\xe4stra Fr\xf6lunda":u"V\xe4stra frölunda",
+            u"V\xe2stra Fr\xf6lunda":u"V\xe4stra fr\xf6lunda",
+            u"Hisings K\xe4rra":u"Hisings k\xe4rra"
             }
 
+mapping_post_code = { "SE-42671": "42671",                                      #Erased 'SE-42671'
+            u"Hov\xe5s": "43650",                                               #Hovås is changed to its postal code
+            "12":"41274",                                                       #the actual postal code
+            "417631":"41763"                                                    #deleted the '1' at the end
+            }
 
 def audit_type(types, name):
     m = street_type_re.search(name)
     if m:
-        street_type = m.group()
-        if street_type not in expected:
-            types[street_type].add(name)
+        audit = m.group()
+        if audit not in expected:
+            types[audit].add(name)
+
+def audit_city_type(types, name):
+    m = street_type_re.search(name)
+    if m:
+        city_audit = m.group()
+        if city_audit not in expected_cities:
+            types[city_audit].add(name)
+#================================================================
+ #Audit cities
+#================================================================
+
+def audit_city(osmfile):
+    osm_file = open(osmfile, "r")
+    city_types = defaultdict(set)
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_city_name(tag):
+                    audit_city_type(city_types, tag.attrib['v'])
+    osm_file.close()
+    return city_types
+
+
+def is_city_name(elem):
+    return (elem.attrib['k'] == "addr:city")
+
+
+def update_city_name(name, mapping):
+    array = []
+    if name in mapping.keys():
+        name = mapping[name]
+    array.append(name)
+    return "".join(array)
+
+    return name
+
+
+"""
+def test(audit,update):
+    st_types = audit(OSMFILE)
+    #pprint.pprint(dict(st_types))
+
+    for st_type, ways in st_types.iteritems():
+        for name in ways:
+            better_name = update(name, mapping_city)
+            print name, "=>", better_name
+            
+
+test(audit_city,update_city_name)   
+"""       
+            
 
 #================================================================
  #Audit postcode
 #================================================================
 
-
-
 def audit_post_code(osmfile):
     osm_file = open(osmfile, "r")
-    street_types = defaultdict(set)
+    postcode_types = defaultdict(set)
+    #========= Detta kan nog tas bort i samband med 'audit_type' funktionen på rad 49 och 'expected' listen ======
     for event, elem in ET.iterparse(osm_file, events=("start",)):
 
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_post_code(tag):
-                    audit_type(street_types, tag.attrib['v'])
+                    audit_type(postcode_types, tag.attrib['v'])
+    #=========  hit kan det tas bort, Gör dessa för house number ===============
     osm_file.close()
-    return street_types
+    return postcode_types
 
 
 def is_post_code(elem):
@@ -86,7 +152,7 @@ def test(audit,update):                                                         
         for name in ways:
             words = name.replace(" ", "")
             if words.isdigit() == False or len(words) != 5:
-                better_name = update(words, mapping)
+                better_name = update(words, mapping_post_code)
                 print words, "=>", better_name
 test(audit_post_code,update_post_code)
 """
@@ -97,15 +163,15 @@ test(audit_post_code,update_post_code)
 def audit_house_number(osmfile):
     osm_file = open(osmfile, "r")
 
-    street_types = defaultdict(set)
+    house_number_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
 
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_house_number(tag):
-                    audit_type(street_types, tag.attrib['v'])
+                    audit_type(house_number_types, tag.attrib['v'])
     osm_file.close()
-    return street_types
+    return house_number_types
 
 def is_house_number(elem):
     return (elem.attrib['k'] == "addr:housenumber")
@@ -121,7 +187,7 @@ def update_house_number(name):                                                  
     return name
     
 
-
+"""
 def test(audit,update):                                                         #this test gives the output presenting the changes made
     st_types = audit(OSMFILE)
     #pprint.pprint(dict(st_types))
@@ -129,10 +195,10 @@ def test(audit,update):                                                         
         for name in ways:
             words = list(name)                                                  #Make all housenumbers into a list
 
-        """                                                                     #Check for housenumbers with only letters
-            if all(i.isdigit() == False for i in words):                        #Check if all list items are letters
-                print name                                                      #In case all list items are letters, print the housenumbers
-        """
+                                                                                #Check for housenumbers with only letters
+        #    if all(i.isdigit() == False for i in words):                       #Check if all list items are letters
+        #        print name                                                     #In case all list items are letters, print the housenumbers
+        
                                                                                 #Check the changes to housenumber
         for name in words:                                                      #Itterate through list items
             if isinstance(name, str) and name.islower():                        #check if listitem is a string and if the string is lowercaps
@@ -140,7 +206,7 @@ def test(audit,update):                                                         
                 print "".join(words), "=>", better_name                         #Print the data side by side with the updated information
         
 test(audit_house_number,update_house_number)
-
+"""
 #================================================================
  #Test
 #================================================================
