@@ -191,23 +191,5 @@ def test(audit,update):                                                         
 test(audit_house_number,update_house_number)
 """
 
-<<<<<<< HEAD:Audit_Foundation.py
-    for st_type, ways in st_types.iteritems():
-        for name in ways:
-            better_name = update(name, mapping)
-            print name, "=>", better_name
-<<<<<<< HEAD
-test(audit_post_code,update_post_code)
-            
-=======
-test(audit_house_number,update_house_number)
-"""   
-   
->>>>>>> audit_foundation-changes
-#word = 'Hello Wor(ld'
-#print re.findall(r"[\w']+",name)
-=======
-   
 
->>>>>>> audit_foundation-changes:Audit.py
 
