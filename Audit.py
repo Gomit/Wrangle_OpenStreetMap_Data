@@ -17,7 +17,7 @@ expected_cities = ["Agnesberg","Angered","Askim",u"Asper\xf6","Billdal","Bohus",
 #expected = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
 
 mapping_city = { "Gothenburg": "Göteborg",                                      #All cities within Gothenburg municipality are corrected according to their correct names
-            u"Hisings K\xe4rra": u"Hisings k\xe4rra",                           #As UTF-8 don't convert åäö in lists on python 2.7, i have used the decoded names for å,ä and ö as can be found in the åäö_test.py file
+            u"Hisings K\xe4rra": u"Hisings k\xe4rra",                           #As UTF-8 don't convert åäö in lists on python 2.7, i have used the decoded names for å,ä and ö as can be found in the Swedish_letters_åäö_Test.py file
             "436 58":u"Hov\xe5s",                                               #The postal code for Hovås is changed to it's full name
             u"V\xe4stra Fr\xf6lunda":u"V\xe4stra frölunda",
             u"V\xe2stra Fr\xf6lunda":u"V\xe4stra fr\xf6lunda",
