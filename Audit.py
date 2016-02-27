@@ -178,20 +178,21 @@ def test(audit,update):                                                         
     for st_type, ways in st_types.iteritems():
         for name in ways:
             words = list(name)                                                  #Make all housenumbers into a list
+            better_name = update(words)                 #ta bort                    
+            print "".join(words), "=>", better_name     #Ta bort
 
                                                                                 ##Check for housenumbers with only letters
         #    if all(i.isdigit() == False for i in words):                       #Check if all list items are letters
         #        print name                                                     #In case all list items are letters, print the housenumbers
         
-                                                                                ##Check the changes to housenumber
+        """ #avmarkera                                                                        ##Check the changes to housenumber
         for name in words:                                                      #Itterate through list items
             if isinstance(name, str) and name.islower():                        #Check if listitem is a string and if the string is lowercaps
                 better_name = update(words)                                     #In that case present the changes made in 'update_house_number'
                 print "".join(words), "=>", better_name                         #Print the data side by side with the updated information
-        
+        """ #avmarkera
 test(audit_house_number,update_house_number)
 
 
-   
 
 
