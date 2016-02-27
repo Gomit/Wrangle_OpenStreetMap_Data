@@ -39,6 +39,15 @@ big_boulder = 'denver-boulder_colorado.osm'
 
 ## Helper lists & dictionaries #################################################
 
+expected_cities = ["Agnesberg",     "Angered",       "Askim",        u"Asper\xf6",      u"K\xf6pstads\xf6",
+                   "Bohus",         u"Dons\xf6",     "Gunnilse",     u"G\xf6teborg",    u"Hisings k\xe4rra",
+                   "Hisings backa", u"Hov\xe5s",     u"Kung\xe4lv",  u"Br\xe4nn\xf6",   u"V\xe4stra fr\xf6lunda",
+                   "Billdal",       u"M\xf6lndal",   u"N\xf6dinge",  u"K\xf6pstads\xf6",
+                   u"Styrs\xf6",    u"S\xe4ve",      "Torslanda",    u"Vr\xe5ng\xf6",
+                   "Askim",         u"\xd6cker\xf6", "Olofstorp"] 
+#expected = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
+
+
 expected = ["Terrace", "Plaza",    "Locust",    "Bypass", "Mall",    "Mall", 
             "Street",  "Avenue",   "Boulevard", "Drive",  "Court",   "Place",
             "Square",  "Lane",     "Road",      "Trail",  "Parkway", "Commons",
@@ -113,6 +122,14 @@ addr_mapping = {"88th"         : "88th Street",                                 
                 "Varra"        : "Varra Road"
                 } # Map incorrect street types to desired
 
+mapping_city = { "Gothenburg"            : "Göteborg",                           #All cities within Gothenburg municipality are corrected according to their correct names
+                 "436 58"                : u"Hov\xe5s",                          #The postal code for Hovås is changed to it's full name
+                 u"Hisings K\xe4rra"     : u"Hisings k\xe4rra",                  #As UTF-8 don't convert åäö in lists on python 2.7, i have used the decoded names for å,ä and ö as can be found in the åäö_test.py file
+                 u"V\xe4stra Fr\xf6lunda": u"V\xe4stra frölunda",
+                 u"V\xe2stra Fr\xf6lunda": u"V\xe4stra fr\xf6lunda",
+                 u"Hisings K\xe4rra"     : u"Hisings k\xe4rra"
+            }
+            
 city_mapping = { "auroraa"      : "aurora",                                     #Changes to City names
                  "centenn"      : "centennial",
                  "demver"       : "denver",
@@ -158,16 +175,12 @@ def update_postal_code(this_postal_code):                                       
     
 def update_city(this_city):                                                     #---Värdet från update_city stoppas in på rad 206
     # Change city string to lower and correct if necessary
-    lcity = this_city.lower()                                                   #---Baldwin Rd.
-    if lcity.find(',') != -1:                                                   #---
-        return lcity[:lcity.find(',')]                                          #---
-    elif re.search('\sco', this_city) != None:                                  #---
-        return lcity[:lcity.find(' ')]                                          #---
-    elif lcity in city_mapping.keys():                                          #---
-        lcity = lcity.replace(lcity, city_mapping[lcity])                       #---
-    else:                                                                       #---
-        return lcity                                                            #---
-    return lcity                                                                #---
+    array = []
+    if this_city not in expected_cities:
+        if this_city in city_mapping.keys():
+            this_city = city_mapping[this_city]
+        array.append(this_city)
+        return "".join(array)                                                              #---
 
 ## Element Shaping and Writing to JSON #################################################
 
@@ -177,6 +190,7 @@ def shape_element(element):
     node = {}                                                                   #+++Foundation code
     # Declare dict for metadata of this node
     created = {}                                                                #---Added code
+    value = set()
     # Define the metadata fields we want to pull from this element
     created_fields = ['changeset', 'version', 'timestamp', 'user', 'uid']       #---Metadatan i 'created' från 'foundation' koden 
     # Define other high level items of interest (example = 'id', 'type', 'pos')
@@ -185,7 +199,6 @@ def shape_element(element):
     elems_of_int = ['highway', 'foot', 'bicycle', 'name', 'natural', 'ele', 'amenity', 'landuse', 'wheelchair', 'peak', 'website', 'phone', 'historic', 'religion', 'cuisine', 'microbrewery', 'fee', 'opening_hours']
     # If this element is node or way, do stuff below
     if element.tag == "node" or element.tag == "way" :                          #+++
-        value = set()
         # First field we add to node is the type of node
         node['type'] = element.tag                                              #/// Används på flera platser
         # Store the element keys (for instance 'uid', 'changeset', 'timestamp', etc.)
@@ -215,8 +228,8 @@ def shape_element(element):
                     elif field == 'city':                                       #---Om fieldet är 'City'
                         value = update_city(child.attrib['v'])                  #---spara då dess v-värde i value <tag k="addr:city" v="Baldwin Rd."/>
                     elif field == 'postcode':                                   #---Gör desamma med postnummer
-                        for zipcode in update_postal_code(child.attrib['v']):   #---Detta värde 'v' stoppas in i rad 143
-                            value.add(zipcode) 
+                        for postcode in update_postal_code(child.attrib['v']):   #---Detta värde 'v' stoppas in i rad 143
+                            value.add(postcode) 
                     else:                                                       #---
                         value = child.attrib['v']                               #--- annars sätt value til det v-värde som uppstår
                     node['address'].update({field : value})                     #--- i ditt address node object rad 25-29 på udacity, skapa ditt key:value par som ex *"housenumber": "5157"* hämtat från udacity på rad 26
