@@ -128,60 +128,50 @@ mapping_city = { "Gothenburg"            : "Göteborg",                         
                  u"V\xe4stra Fr\xf6lunda": u"V\xe4stra frölunda",
                  u"V\xe2stra Fr\xf6lunda": u"V\xe4stra fr\xf6lunda",
                  u"Hisings K\xe4rra"     : u"Hisings k\xe4rra"
-            }
+            }# Map incorrect city names to desired
             
-city_mapping = { "auroraa"      : "aurora",                                     #Changes to City names
-                 "centenn"      : "centennial",
-                 "demver"       : "denver",
-                 "dener"        : "denver",
-                 "edgwater"     : "edgewater",
-                 "hemderson"    : "henderson",
-                 "thorton"      : "thornton",
-                 "westminister" : "westminster"
-                } # Map incorrect city names to desired
 
+
+mapping_post_code = { "SE-42671": "42671",                                      
+                     u"Hov\xe5s": "43650",                                               #Hovås is changed to it's correct postal code
+                     "12"       : "41274",                                                       #The actual postal code
+                     "417631"   : "41763"                                                    #Deleted the incorrect '1' at the end of postcode
+                     }
 ## Update Functions #################################################
 
-def update_street_name(name, expected = expected, exceptions = exceptions, highways = highways, county_roads = county_roads, mapping = addr_mapping):
-    # Define streety type and correct if necessary
-    kind = name.rsplit(None, 1)[-1]                                             #Detta kan eventuellt tas bort
-    if kind in expected or kind in suites:
-        name = name
-    elif kind in exceptions:
-        name = name
-    elif kind in highways:
-    	name = 'Highway ' + kind
-    elif kind in county_roads:
-    	name = 'County Road ' + kind
-    else:
-        name = name.replace(str(kind), addr_mapping[kind])                      
-    return name                                                                 #===Hit ner====
+def update_postcode(name):                                                    # Define streety type and correct if necessary
+    if name.isdigit() == False or len(name) != 5:                             #Check if the postcode is not digits and/or does not have the standard length of 5 numbers
+        if name in mapping_post_code.keys():                                             #Check with the key:value pairs in the 'mapping_post_code' object on line 27
+            name = mapping_post_code[name]                                              #If the key matches, replace it with the new value
+            return name                                                     #then append it to array                                                      #Saw together the spaces
+    return name 
 
-def update_postal_code(this_postal_code):                                       #---
+def update_house_number(this_house_number):                                       #---
     # Take first 5-digits if postal code > 5 digits
     result = []
-    string = this_postal_code.upper()
-    groups = [group.replace(" ", "") for group in string.split(';')]
+    new_string = this_house_number.upper()
+    groups = [group.replace(" ", "") for group in new_string.split(';')]
     for group in groups:
         if re.match(r'\d{1,5}-\d{1,5}', group):
-            group_range = map(int, group.split('-'))
-            if group_range[0] < group_range[1]:
-                result += list(map(str, range(group_range[0], group_range[1]+1)))
-            else:
-                result += list(map(str, range(group_range[1], group_range[0]+1)))
+            if all(i.isdigit() == True for i in group.replace("-", "")): 
+                group_range = map(int, group.split('-'))
+                if group_range[0] < group_range[1]:
+                    result += list(map(str, range(group_range[0], group_range[1]+1)))
+                else:
+                    result += list(map(str, range(group_range[1], group_range[0]+1)))
         elif re.match(r'\d{1,5}', group):
+            result.append(group)
+        else:
             result.append(group)
     return result
     
 def update_city(this_city):                                                     #---Värdet från update_city stoppas in på rad 206
     # Change city string to lower and correct if necessary
-    array = []
     if this_city not in expected_cities:
-        if this_city in city_mapping.keys():
-            this_city = city_mapping[this_city]
-        array.append(this_city)
-        return "".join(array)                                                              #---
-
+        if this_city in mapping_city.keys():
+            this_city = mapping_city[this_city]
+            return this_city
+    return this_city
 ## Element Shaping and Writing to JSON #################################################
 
 def shape_element(element):
@@ -190,7 +180,6 @@ def shape_element(element):
     node = {}                                                                   #+++Foundation code
     # Declare dict for metadata of this node
     created = {}                                                                #---Added code
-    value = set()
     # Define the metadata fields we want to pull from this element
     created_fields = ['changeset', 'version', 'timestamp', 'user', 'uid']       #---Metadatan i 'created' från 'foundation' koden 
     # Define other high level items of interest (example = 'id', 'type', 'pos')
@@ -199,6 +188,7 @@ def shape_element(element):
     elems_of_int = ['highway', 'foot', 'bicycle', 'name', 'natural', 'ele', 'amenity', 'landuse', 'wheelchair', 'peak', 'website', 'phone', 'historic', 'religion', 'cuisine', 'microbrewery', 'fee', 'opening_hours']
     # If this element is node or way, do stuff below
     if element.tag == "node" or element.tag == "way" :                          #+++
+        value = set()                                                           #value:n som du satt in
         # First field we add to node is the type of node
         node['type'] = element.tag                                              #/// Används på flera platser
         # Store the element keys (for instance 'uid', 'changeset', 'timestamp', etc.)
@@ -224,12 +214,12 @@ def shape_element(element):
                 if child.attrib['k'].startswith('addr:') == 1 and child.attrib['k'].count(':') < 2:      # om det bara finns en addr: och inte finns två beteckningar som ex: <tag k="addr:street:name" v="Lexington"/>
                     field = child.attrib['k'][5:]                               #---Sätt få field till lika med alla bokstäver efter 5, dvs alla bokstäver efter addr: altså "housenumber" <tag k="addr:housenumber" v="1412"/>
                     if field == 'street':                                       #---Om nu field är 'street'
-                        value = update_street_name(child.attrib['v'])   #Ersätt med housenumber #---sätt value till dess attrib 'v' i detta fallet "West Lexington St." <tag k="addr:street" v="West Lexington St."/>
+                        value = update_postcode(child.attrib['v'])              #Ersätt med housenumber #---sätt value till dess attrib 'v' i detta fallet "West Lexington St." <tag k="addr:street" v="West Lexington St."/>
                     elif field == 'city':                                       #---Om fieldet är 'City'
                         value = update_city(child.attrib['v'])                  #---spara då dess v-värde i value <tag k="addr:city" v="Baldwin Rd."/>
                     elif field == 'postcode':                                   #---Gör desamma med postnummer
-                        for postcode in update_postal_code(child.attrib['v']):   #---Detta värde 'v' stoppas in i rad 143
-                            value.add(postcode) 
+                        for house_number in update_house_number(child.attrib['v']):   #---Detta värde 'v' stoppas in i rad 143
+                            value.add(house_number) 
                     else:                                                       #---
                         value = child.attrib['v']                               #--- annars sätt value til det v-värde som uppstår
                     node['address'].update({field : value})                     #--- i ditt address node object rad 25-29 på udacity, skapa ditt key:value par som ex *"housenumber": "5157"* hämtat från udacity på rad 26
