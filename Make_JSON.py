@@ -213,7 +213,7 @@ def shape_element(element):
             if child.tag == 'tag':                                              #--- Gör samma som ovan
                 if child.attrib['k'].startswith('addr:') == 1 and child.attrib['k'].count(':') < 2:      # om det bara finns en addr: och inte finns två beteckningar som ex: <tag k="addr:street:name" v="Lexington"/>
                     field = child.attrib['k'][5:]                               #---Sätt få field till lika med alla bokstäver efter 5, dvs alla bokstäver efter addr: altså "housenumber" <tag k="addr:housenumber" v="1412"/>
-                    if field == 'street':                                       #---Om nu field är 'street'
+                    if field == 'housenumber':                                   #---Om nu field är 'street'
                         value = update_postcode(child.attrib['v'])              #Ersätt med housenumber #---sätt value till dess attrib 'v' i detta fallet "West Lexington St." <tag k="addr:street" v="West Lexington St."/>
                     elif field == 'city':                                       #---Om fieldet är 'City'
                         value = update_city(child.attrib['v'])                  #---spara då dess v-värde i value <tag k="addr:city" v="Baldwin Rd."/>
