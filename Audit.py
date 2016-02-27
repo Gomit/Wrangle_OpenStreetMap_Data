@@ -122,6 +122,7 @@ def update_post_code(name, mapping):
     return "".join(array)                                                       #Saw together the spaces
     return name 
 
+
 """                                                                             ##Test-check
 def test(audit,update):                                                         #This test gives the output presenting the changes made
     st_types = audit(OSMFILE)
@@ -164,13 +165,13 @@ def update_house_number(name):                                                  
     words = list(name)                                                          #Make a list out of the house numbers
     for word in words:                                          
         if isinstance(word, str) and word.islower():                            #Check if list item is a string and if the string is lowercaps
-            word = word.title()                                                 #If True, turn it into uppercaps
+            word = word.upper()                                                 #If True, turn it into uppercaps
         array.append(word)                                                      #Append the updated date into the array
     return "".join(array)                                                       #Saw together the spaces
     return name
     
 
-"""                                                                             ##Test-check
+                                                                             ##Test-check
 def test(audit,update):                                                         #This test gives the output presenting the changes made
     st_types = audit(OSMFILE)
     #pprint.pprint(dict(st_types))
@@ -189,7 +190,7 @@ def test(audit,update):                                                         
                 print "".join(words), "=>", better_name                         #Print the data side by side with the updated information
         
 test(audit_house_number,update_house_number)
-"""
+
 
    
 
