@@ -107,87 +107,87 @@ def update_city(this_city):
 ## Element Shaping and Writing to JSON #################################################
 
 def shape_element(element):
-    # Shaping the element to be pushed to JSON
-    # Declare dict for new reshaped element
-    node = {}                                                                   #+++Foundation code
-    # Declare dict for metadata of this node
-    created = {}                                                                #---Added code
-    # Define the metadata fields we want to pull from this element
-    created_fields = ['changeset', 'version', 'timestamp', 'user', 'uid']       #---Metadatan i 'created' från 'foundation' koden 
-    # Define other high level items of interest (example = 'id', 'type', 'pos')
-    high_level_items = ['id', 'visible', 'type']                                #---Också Metadatan i 'created' från 'foundation' koden
-    # Define other elements of interest                                         #---Nedan: Också Metadatan i 'created' från 'foundation' koden, plus tydligen andra intressanta element
+    # Create the dict to be pushed to JSON
+    node = {}                                                                   
+    # Create the dict for data to be pushed into the node
+    created = {}                                                                
+    # Define the metadata fields which will populate the dict
+    created_fields = ['changeset', 'version', 'timestamp', 'user', 'uid']       
+    # Define other high level items which will populate the dict
+    high_level_items = ['id', 'visible', 'type']                                
+    # Define other elements of interest                                         
     elems_of_int = ['amenity', 'cuisine', 'name', 'phone', 'historic', 'peak', 'natural']
-    # If this element is node or way, do stuff below
-    if element.tag == "node" or element.tag == "way" :                          #+++
-        value = set()                                                           #value:n som du satt in
-        # First field we add to node is the type of node
-        node['type'] = element.tag                                              #/// Används på flera platser
+    # If this element is node or way, start pupulating
+    if element.tag == "node" or element.tag == "way" :  
+        # Create the element which will populate postcodes                        
+        value = set()                                                           
+        # First field added to node is the tag type
+        node['type'] = element.tag                                              
         # Store the element keys (for instance 'uid', 'changeset', 'timestamp', etc.)
-        keys = element.attrib.keys()                                            #///
+        keys = element.attrib.keys()                                            
         # Second we add the created metadata of interest, high_level_keys, position and their values
-        for item in keys:                                                       #--- Behåll detta kodblock!: Itterera genom keys:en och spara sedan i created.
-            if item in created_fields:                                          #--- Detta är för att bygga upp objectet på rad 17 - 23 på udacity coden
-                created[item] = element.attrib[item]                            #--- Denna koden skapar allt från 14-23
-            if item in high_level_items:                                        #---
-                node[item] = element.attrib[item]                               #---
-            if 'lat' in keys:                                                   #///
-                node['pos'] = [float(element.attrib['lat']), float(element.attrib['lon'])]   #/// detta skapar latitud och longitud på rad 24
+        for item in keys:                                                       
+            if item in created_fields:                                          
+                created[item] = element.attrib[item]                            
+            if item in high_level_items:                                        
+                node[item] = element.attrib[item]                               
+            if 'lat' in keys:                                                   
+                node['pos'] = [float(element.attrib['lat']), float(element.attrib['lon'])]           
         # Store created fields and values as element within the node
-        node['created'] = created                                               #---Spara hela created i node, node representerar allt från rad 13 - 34 på udacity koden
+        node['created'] = created                                               
         # If node contains address data, add address field
-        for child in element:                                                   #---för varje <element>29.99</element>
-        	if child.tag == 'tag':                                               #---om dess tag har element-namn "tag" som <tag k="addr:city" v="Chicago"/>
-        		if child.attrib['k'].startswith('addr:'):                      #---sen om dess attribut är k och börjar med 'addr:' som i <tag k="addr:city" v="Chicago"/>
-        			node['address'] = {}                                      #--- skapa då en 'address' key med value {} som i 'address' : {} som han vill i 25-29
+        for child in element:                                                   
+        	if child.tag == 'tag':                                               
+        		if child.attrib['k'].startswith('addr:'):                      
+        			node['address'] = {}                                      
         # Populate address key (if present) and all other attributes of interest
-        for child in element:                                                   #--- Gör samma som ovan
-            if child.tag == 'tag':                                              #--- Gör samma som ovan
-                if child.attrib['k'].startswith('addr:') == 1 and child.attrib['k'].count(':') < 2:      # om det bara finns en addr: och inte finns två beteckningar som ex: <tag k="addr:street:name" v="Lexington"/>
-                    field = child.attrib['k'][5:]                               #---Sätt få field till lika med alla bokstäver efter 5, dvs alla bokstäver efter addr: altså "housenumber" <tag k="addr:housenumber" v="1412"/>
-                    if field == 'housenumber':                                   #---Om nu field är 'street'
-                        value = update_postcode(child.attrib['v'])              #Ersätt med housenumber #---sätt value till dess attrib 'v' i detta fallet "West Lexington St." <tag k="addr:street" v="West Lexington St."/>
-                    elif field == 'city':                                       #---Om fieldet är 'City'
-                        value = update_city(child.attrib['v'])                  #---spara då dess v-värde i value <tag k="addr:city" v="Baldwin Rd."/>
-                    elif field == 'postcode':                                   #---Gör desamma med postnummer
-                        for house_number in update_house_number(child.attrib['v']):   #---Detta värde 'v' stoppas in i rad 143
+        for child in element:                                                   
+            if child.tag == 'tag':                                              
+                if child.attrib['k'].startswith('addr:') == 1 and child.attrib['k'].count(':') < 2:  
+                    field = child.attrib['k'][5:]                              
+                    if field == 'housenumber':                                
+                        value = update_postcode(child.attrib['v'])             
+                    elif field == 'city':                                       
+                        value = update_city(child.attrib['v'])                  
+                    elif field == 'postcode':                                   
+                        for house_number in update_house_number(child.attrib['v']):  
                             value.add(house_number) 
-                    else:                                                       #---
-                        value = child.attrib['v']                               #--- annars sätt value til det v-värde som uppstår
-                    node['address'].update({field : value})                     #--- i ditt address node object rad 25-29 på udacity, skapa ditt key:value par som ex *"housenumber": "5157"* hämtat från udacity på rad 26
-                if child.attrib['k'] in elems_of_int:                           #---Skapa de sista 4 rubrikerna från Udacity objectet, rad 30-33: Om k-värdet finns i list:en elems_of_int, som i detta fallet 'name' <tag k="name" v="Matty Ks"/>
-                    node[child.attrib['k']] = child.attrib['v']                 #---skapa då ett key:value par name:Matty Ks
+                    else:                                                       
+                        value = child.attrib['v']                               
+                    node['address'].update({field : value})                     
+                if child.attrib['k'] in elems_of_int:                           
+                    node[child.attrib['k']] = child.attrib['v']                 
         # Process the way nds
-        if element.tag == "way":                                                #---för all way taggar </way>
-            nds = []                                                            #---skapa ny list
-            for child in element:                                               #---för varje child i denna ways <way> element. Ex. 70-86
-                if child.tag == 'nd':                                           #---om elementets child är 'nd' som i <nd ref="2199822281"/>
-                    nds.append(child.attrib['ref'])                             #---Appenda då dess 'ref' referensnummer värde <nd ref="2199822281"/>
-            node['node_refs'] = nds                                             #---stoppa sedan in detta i node_refs
-        return node                                                             #+++returna node
-    else:                                                                       #+++
-        return None                                                             #+++
+        if element.tag == "way":                                                
+            nds = []                                                           
+            for child in element:
+                # parse second-level tags for ways and populate `node_refs`                                               
+                if child.tag == 'nd':                                           
+                    nds.append(child.attrib['ref'])                           
+            node['node_refs'] = nds                                           
+        return node                                                             
+    else:                                                                       
+        return None                                                             
 
-def process_map(file_in, pretty = False):                                       #+++
-    # Process to JSON. Used start, end objects to improve performance
-    # Depending upon file size... this may take a few minutes
-    file_out = "{0}.json".format(file_in)                                       #+++
-    data = []                                                                   #+++
-    with codecs.open(file_out, "w") as fo:                                      #+++
-        context = ET.iterparse(file_in,events=('start','end'))                  #---parsa genom varje rad för sig
-        context = iter(context)                                                 #---itterera genom context
-        event, root = context.next()                                            #---
-        for event, element in context:                                          #---
-            if event == 'end':                                                  #---
-                el = shape_element(element)                                     #+++
-                if el:                                                          #+++
-                    data.append(el)                                             #+++
-                    if pretty:                                                  #+++
-                        fo.write(json.dumps(el, indent=2)+"\n")                 #+++
-                    else:                                                       #+++
-                        fo.write(json.dumps(el) + "\n")                         #+++
-            root.clear()                                                        #---
-    return data                                                                 #+++
+def process_map(file_in, pretty = False):                                       
+    # Process to JSON
+    file_out = "{0}.json".format(file_in)                                       
+    data = []                                                                   
+    with codecs.open(file_out, "w") as fo:                                      
+        context = ET.iterparse(file_in,events=('start','end'))                  
+        context = iter(context)                                                 
+        event, root = context.next()                                            
+        for event, element in context:                                          
+            if event == 'end':                                                  
+                el = shape_element(element)                                     
+                if el:                                                          
+                    data.append(el)                                             
+                    if pretty:                                                  
+                        fo.write(json.dumps(el, indent=2)+"\n")                 
+                    else:                                                       
+                        fo.write(json.dumps(el) + "\n")                         
+            root.clear()                                                        
+    return data                                                                 
 
 ## Mongo Import Instructions (after JSON created) ###################################
 
