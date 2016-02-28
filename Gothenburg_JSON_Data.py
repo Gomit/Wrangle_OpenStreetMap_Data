@@ -62,18 +62,24 @@ mapping_post_code = { "SE-42671": "42671",
                      "12"       : "41274",                                           
                      "417631"   : "41763"                                        
                      }# Map incorrect postcodes to desired
+
 ## Update Functions #################################################
 
-def update_postcode(name):                                                      # Define streety type and correct if necessary
-    if name.isdigit() == False or len(name) != 5:                               #Check if the postcode is not digits and/or does not have the standard length of 5 numbers
-        if name in mapping_post_code.keys():                                             #Check with the key:value pairs in the 'mapping_post_code' object on line 27
-            name = mapping_post_code[name]                                              #If the key matches, replace it with the new value
-            return name                                                         #then append it to array                                                      #Saw together the spaces
-    return name 
+#Check for bad postcodes and correct if necessary
+def update_postcode(name):
+    #Erase spaces and correct with mapping_post_code if necessary
+    code = name.replace(" ", "")
+    if code.isdigit() == False or len(code) != 5:                               
+        if code in mapping_post_code.keys():                                            
+            code = mapping_post_code[code]                                      
+            return code                                                         
+    return code 
 
-def update_house_number(this_house_number):                                       #---
+#Check for abbreviations and correct if necessary
+def update_house_number(this_house_number):                                       
     result = []
     new_string = this_house_number.upper()
+    #Split based on ';' and '-' and append full sequence provided all are digits
     groups = [group.replace(" ", "") for group in new_string.split(';')]
     for group in groups:
         if re.match(r'\d{1,5}-\d{1,5}', group):
@@ -88,14 +94,16 @@ def update_house_number(this_house_number):                                     
         else:
             result.append(group)
     return result
-    
-def update_city(this_city):                                                     #---Värdet från update_city stoppas in på rad 206
-    # Change city string to lower and correct if necessary
+
+#Check for misspellings and cities not associated to Gothenburg
+def update_city(this_city):                                                     
+    #Check if city among expected_cities, else correct if necessary
     if this_city not in expected_cities:
         if this_city in mapping_city.keys():
             this_city = mapping_city[this_city]
             return this_city
     return this_city
+
 ## Element Shaping and Writing to JSON #################################################
 
 def shape_element(element):
