@@ -1,0 +1,288 @@
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "11129782", 
+    "user": "bbmiller", 
+    "version": "7", 
+    "uid": "451048", 
+    "timestamp": "2012-03-28T18:31:23Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9730791, 
+    -87.6866303
+  ], 
+  "id": "261114295"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8448766", 
+    "user": "bbmiller", 
+    "version": "6", 
+    "uid": "451048", 
+    "timestamp": "2011-06-15T17:04:54Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9730416, 
+    -87.6878512
+  ], 
+  "id": "261114296"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "5", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:14Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9729565, 
+    -87.6939548
+  ], 
+  "id": "261114299"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "5", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:14Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.970738, 
+    -87.6976025
+  ], 
+  "id": "261146436"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "7", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:15Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9740068, 
+    -87.6988576
+  ], 
+  "id": "261147304"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "5", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:14Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9707656, 
+    -87.6938669
+  ], 
+  "id": "261224274"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8448766", 
+    "user": "bbmiller", 
+    "version": "47", 
+    "uid": "451048", 
+    "timestamp": "2011-06-15T16:55:37Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9730154, 
+    -87.6890403
+  ], 
+  "id": "293816175"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "15348240", 
+    "user": "Umbugbene", 
+    "version": "37", 
+    "uid": "567034", 
+    "timestamp": "2013-03-13T07:46:29Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9749225, 
+    -87.6891198
+  ], 
+  "id": "305896090"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "15348240", 
+    "user": "Umbugbene", 
+    "version": "12", 
+    "uid": "567034", 
+    "timestamp": "2013-03-13T08:02:56Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9740292, 
+    -87.701243
+  ], 
+  "id": "317636974"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "15348240", 
+    "user": "Umbugbene", 
+    "version": "13", 
+    "uid": "567034", 
+    "timestamp": "2013-03-13T08:08:01Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9740556, 
+    -87.6979712
+  ], 
+  "id": "317636971"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "14927972", 
+    "user": "Umbugbene", 
+    "version": "2", 
+    "uid": "567034", 
+    "timestamp": "2013-02-05T22:43:49Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9705609, 
+    -87.7012048
+  ], 
+  "id": "317637399"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "14927972", 
+    "user": "Umbugbene", 
+    "version": "2", 
+    "uid": "567034", 
+    "timestamp": "2013-02-05T22:43:49Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9706972, 
+    -87.7012109
+  ], 
+  "id": "317637398"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8448766", 
+    "user": "bbmiller", 
+    "version": "3", 
+    "uid": "451048", 
+    "timestamp": "2011-06-15T17:04:54Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.973113, 
+    -87.6847998
+  ], 
+  "id": "365214872"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "6", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:15Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9747482, 
+    -87.6988886
+  ], 
+  "id": "261299091"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8448766", 
+    "user": "bbmiller", 
+    "version": "6", 
+    "uid": "451048", 
+    "timestamp": "2011-06-15T17:04:54Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9731219, 
+    -87.6841979
+  ], 
+  "id": "261114294"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "3359748", 
+    "user": "woodpeck_fixbot", 
+    "version": "4", 
+    "uid": "147510", 
+    "timestamp": "2009-12-13T00:36:09Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9707217, 
+    -87.7000019
+  ], 
+  "id": "261210804"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "7", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:15Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9748542, 
+    -87.6922652
+  ], 
+  "id": "261221422"
+}
+{
+  "visible": "true", 
+  "created": {
+    "changeset": "8581395", 
+    "user": "bbmiller", 
+    "version": "7", 
+    "uid": "451048", 
+    "timestamp": "2011-06-29T14:14:15Z"
+  }, 
+  "type": "node", 
+  "pos": [
+    41.9758794, 
+    -87.6923639
+  ], 
+  "id": "261221424"
+}

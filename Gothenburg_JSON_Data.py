@@ -34,8 +34,8 @@ for _, element in ET.iterparse(boulder_osm):
                         print child.attrib
 '''
 
-small_boulder = 'boulder_sample.osm'
-big_boulder = 'denver-boulder_colorado.osm'
+#small_boulder = 'data/gothenburg_sweden.osm'
+#big_boulder = 'data/gothenburg_sweden.osm'
 
 ## Helper lists & dictionaries #################################################
 
@@ -105,7 +105,6 @@ def update_city(this_city):
     return this_city
 
 ## Element Shaping and Writing to JSON #################################################
-
 def shape_element(element):
     # Create the dict to be pushed to JSON
     node = {}                                                                   
@@ -191,6 +190,36 @@ def process_map(file_in, pretty = False):
             root.clear()                                                        
     return data                                                                 
 
+def test():
+    # NOTE: if you are running this code on your computer, with a larger dataset, 
+    # call the process_map procedure with pretty=False. The pretty=True option adds 
+    # additional spaces to the output, making it significantly larger.
+    data = process_map('data.osm', True)
+    #pprint.pprint(data)
+    
+    correct_first_elem = {
+        "id": "261114295", 
+        "visible": "true", 
+        "type": "node", 
+        "pos": [41.9730791, -87.6866303], 
+        "created": {
+            "changeset": "11129782", 
+            "user": "bbmiller", 
+            "version": "7", 
+            "uid": "451048", 
+            "timestamp": "2012-03-28T18:31:23Z"
+        }
+    }
+    assert data[0] == correct_first_elem
+    assert data[-1]["address"] == {
+                                    "street": "West Lexington St.", 
+                                    "housenumber": "1412"
+                                      }
+    assert data[-1]["node_refs"] == [ "2199822281", "2199822390",  "2199822392", "2199822369", 
+                                    "2199822370", "2199822284", "2199822281"]
+
+
+test()
 ## Mongo Import Instructions (after JSON created) ###################################
 
 # Start a mongod instance using ./mongod
