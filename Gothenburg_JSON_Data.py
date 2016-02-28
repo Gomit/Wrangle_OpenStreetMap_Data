@@ -44,99 +44,24 @@ expected_cities = ["Agnesberg",     "Angered",       "Askim",        u"Asper\xf6
                    "Hisings backa", u"Hov\xe5s",     u"Kung\xe4lv",  u"Br\xe4nn\xf6",   u"V\xe4stra fr\xf6lunda",
                    "Billdal",       u"M\xf6lndal",   u"N\xf6dinge",  u"K\xf6pstads\xf6",
                    u"Styrs\xf6",    u"S\xe4ve",      "Torslanda",    u"Vr\xe5ng\xf6",
-                   "Askim",         u"\xd6cker\xf6", "Olofstorp"] 
-#expected = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
+                   "Askim",         u"\xd6cker\xf6", "Olofstorp"] # List of the cities we expect in Gothenburg municipality
+#Cities in correct spelling
+#expected_cities = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
 
 
-expected = ["Terrace", "Plaza",    "Locust",    "Bypass", "Mall",    "Mall", 
-            "Street",  "Avenue",   "Boulevard", "Drive",  "Court",   "Place",
-            "Square",  "Lane",     "Road",      "Trail",  "Parkway", "Commons",
-            "Way",     "Broadway", "Circle",    "South",  "East",    "North",
-            "Point",   "Row",      "West" ] # List of the street types we expect to see in the US
-
-highways = ['2', '8', '40', '73', '74', '83', '85', '86', '119', '285', '287'] # Includes 'highway' and 'state highway' and 'us highway'
-
-county_roads = ['7', '41', '45', '72', '126', '186', '314'] # Includes county roads
-
-exceptions = ['19',        '#107',   '#169',     '#220',   '400',
-              '1606',      '6001',   '6523',     '8765',   'A',
-              'Highway',   'MUP',    'Boulder',  'Canyon', 'Centennial',
-              'Center',    'Lamar',  'Lincoln',  'Mine',   'Newland',
-              'Ramp',      'Run',    'Tennyson', 'Tilden', 'Ute',
-              'Wadsworth', 'Walnut', 'Woodfern', 'G' ] # Exceptions that need manual checking
-
-suites = ['1E',  '5B',   '106',  '110',  '120', 
-          '154', '200',  '200b', '200c', '230',
-          '300', '#300', '400',  '700',  '#850',
-          '900', '2200', 'D',    'E1',    ] # Includes both 'Suite', 'Ste', and 'Unit'. Let them be.
-
-addr_mapping = {"88th"         : "88th Street",                                 #Changes to street endings
-                "80208"        : "High Street",
-                "80305"        : "South Lashley Lane",
-                "Appia"        : "Via Appia Way",
-                "Av"           : "Avenue",
-                "Ave"          : "Avenue",
-                "Ave."         : "Avenue",
-                "Avenue)"      : "East Bromley Lane",
-    			"ave."         : "Avenue",
-    			"Arapahoe"     : "Arapahoe Avenue",
-    			"Baselin"      : "Baseline Road",
-                "Baseline"     : "Baseline Road",
-    			"Blvd"         : "Boulevard",
-                "Caria"        : "Caria Court",
-                "Cherryvale"   : "Cherryvale Road",
-    			"Cir"          : "Circle",
-                "circle"       : "Circle",
-    			"Colorado"     : 'West Alameda Parkway',
-                "Colfax"       : "East Colfax Avenue",
-                "Ct"           : "Court",
-                "ct"           : "Court",
-                "Dr"           : "Drive",
-                "dr"           : "Drive",
-                "Elm"          : "East Elm Street",
-                "Etna"         : "Etna Court",
-                "Grant"        : "Grant Place",
-                "lane"         : "Lane",
-                "Leetsdale"    : "Leetsdale Drive",
-                "Ln"           : "Lane",
-                "Main"         : "Main Street",
-                "Mainstreet"   : "Main Street",
-                "Osage"        : "Osage Drive",
-                "Pennsylvania" : "Pennsylvania Avenue",
-                "Pky"          : "Parkway",
-                "Pkwy"         : "Parkway",
-                "Pl"           : "Place",
-                "Rd"           : "Road",
-                "Rd."          : "Road",
-                "rd"           : "Road",
-                "Roadaddr"     : "Arapahoe Avenue",
-                "S"            : "",
-                "St"           : "Street",
-                "St."          : "Street",
-                "STreet"       : "Street",
-                "Streer"       : "Street",
-                "Strret"       : "Street",
-                "st"           : "Street",
-                "trail"        : "Trail",
-                "Valmont"      : "Valmont Road",
-                "Varra"        : "Varra Road"
-                } # Map incorrect street types to desired
-
-mapping_city = { "Gothenburg"            : "Göteborg",                           #All cities within Gothenburg municipality are corrected according to their correct names
-                 "436 58"                : u"Hov\xe5s",                          #The postal code for Hovås is changed to it's full name
-                 u"Hisings K\xe4rra"     : u"Hisings k\xe4rra",                  #As UTF-8 don't convert åäö in lists on python 2.7, i have used the decoded names for å,ä and ö as can be found in the åäö_test.py file
+mapping_city = { "Gothenburg"            : "Göteborg",                           
+                 "436 58"                : u"Hov\xe5s",                          
+                 u"Hisings K\xe4rra"     : u"Hisings k\xe4rra",                 
                  u"V\xe4stra Fr\xf6lunda": u"V\xe4stra frölunda",
                  u"V\xe2stra Fr\xf6lunda": u"V\xe4stra fr\xf6lunda",
                  u"Hisings K\xe4rra"     : u"Hisings k\xe4rra"
-            }# Map incorrect city names to desired
+                 }# Map incorrect city names to desired
             
-
-
 mapping_post_code = { "SE-42671": "42671",                                      
-                     u"Hov\xe5s": "43650",                                               #Hovås is changed to it's correct postal code
-                     "12"       : "41274",                                                       #The actual postal code
-                     "417631"   : "41763"                                                    #Deleted the incorrect '1' at the end of postcode
-                     }
+                     u"Hov\xe5s": "43650",                                              
+                     "12"       : "41274",                                           
+                     "417631"   : "41763"                                        
+                     }# Map incorrect postcodes to desired
 ## Update Functions #################################################
 
 def update_postcode(name):                                                      # Define streety type and correct if necessary
