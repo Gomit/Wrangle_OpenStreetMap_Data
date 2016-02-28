@@ -145,7 +145,9 @@ def shape_element(element):
             if child.tag == 'tag':                                              
                 if child.attrib['k'].startswith('addr:') == 1 and child.attrib['k'].count(':') < 2:  
                     field = child.attrib['k'][5:]                              
-                    if field == 'housenumber':                                
+                    if field == 'street':                                
+                        value = child.attrib['v']                   
+                    elif field == 'housenumber':                                
                         value = update_postcode(child.attrib['v'])             
                     elif field == 'city':                                       
                         value = update_city(child.attrib['v'])                  
