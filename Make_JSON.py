@@ -139,15 +139,14 @@ mapping_post_code = { "SE-42671": "42671",
                      }
 ## Update Functions #################################################
 
-def update_postcode(name):                                                    # Define streety type and correct if necessary
-    if name.isdigit() == False or len(name) != 5:                             #Check if the postcode is not digits and/or does not have the standard length of 5 numbers
+def update_postcode(name):                                                      # Define streety type and correct if necessary
+    if name.isdigit() == False or len(name) != 5:                               #Check if the postcode is not digits and/or does not have the standard length of 5 numbers
         if name in mapping_post_code.keys():                                             #Check with the key:value pairs in the 'mapping_post_code' object on line 27
             name = mapping_post_code[name]                                              #If the key matches, replace it with the new value
-            return name                                                     #then append it to array                                                      #Saw together the spaces
+            return name                                                         #then append it to array                                                      #Saw together the spaces
     return name 
 
 def update_house_number(this_house_number):                                       #---
-    # Take first 5-digits if postal code > 5 digits
     result = []
     new_string = this_house_number.upper()
     groups = [group.replace(" ", "") for group in new_string.split(';')]
@@ -185,7 +184,7 @@ def shape_element(element):
     # Define other high level items of interest (example = 'id', 'type', 'pos')
     high_level_items = ['id', 'visible', 'type']                                #---Också Metadatan i 'created' från 'foundation' koden
     # Define other elements of interest                                         #---Nedan: Också Metadatan i 'created' från 'foundation' koden, plus tydligen andra intressanta element
-    elems_of_int = ['highway', 'foot', 'bicycle', 'name', 'natural', 'ele', 'amenity', 'landuse', 'wheelchair', 'peak', 'website', 'phone', 'historic', 'religion', 'cuisine', 'microbrewery', 'fee', 'opening_hours']
+    elems_of_int = ['amenity', 'cuisine', 'name', 'phone', 'historic', 'peak', 'natural']
     # If this element is node or way, do stuff below
     if element.tag == "node" or element.tag == "way" :                          #+++
         value = set()                                                           #value:n som du satt in
