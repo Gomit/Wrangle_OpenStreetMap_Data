@@ -9,7 +9,7 @@ import xml.etree.cElementTree as ET
 import re
 import codecs
 import json
-
+import pprint
 '''
 This file takes an osm files, parses it, and
 writes each element into a JSON file. Using the audit.py 
@@ -118,8 +118,6 @@ def shape_element(element):
     elems_of_int = ['amenity', 'cuisine', 'name', 'phone', 'historic', 'peak', 'natural']
     # If this element is node or way, start pupulating
     if element.tag == "node" or element.tag == "way" :  
-        # Create the element which will populate postcodes                        
-        value = set()                                                           
         # First field added to node is the tag type
         node['type'] = element.tag                                              
         # Store the element keys (for instance 'uid', 'changeset', 'timestamp', etc.)
@@ -147,12 +145,11 @@ def shape_element(element):
                     if field == 'street':                                
                         value = child.attrib['v']                   
                     elif field == 'housenumber':                                
-                        value = update_postcode(child.attrib['v'])             
+                        value = update_house_number(child.attrib['v'])
                     elif field == 'city':                                       
                         value = update_city(child.attrib['v'])                  
                     elif field == 'postcode':                                   
-                        for house_number in update_house_number(child.attrib['v']):  
-                            value.add(house_number) 
+                        value = update_postcode(child.attrib['v'])  
                     else:                                                       
                         value = child.attrib['v']                               
                     node['address'].update({field : value})                     
@@ -190,11 +187,16 @@ def process_map(file_in, pretty = False):
             root.clear()                                                        
     return data                                                                 
 
+def create_JSON():
+    process_map('data/gothenburg_sweden.osm', True)
+create_JSON()
+
+"""
 def test():
     # NOTE: if you are running this code on your computer, with a larger dataset, 
     # call the process_map procedure with pretty=False. The pretty=True option adds 
     # additional spaces to the output, making it significantly larger.
-    data = process_map('data.osm', True)
+    data = process_map('data/example.osm', True)
     #pprint.pprint(data)
     
     correct_first_elem = {
@@ -210,16 +212,18 @@ def test():
             "timestamp": "2012-03-28T18:31:23Z"
         }
     }
+    
     assert data[0] == correct_first_elem
     assert data[-1]["address"] == {
                                     "street": "West Lexington St.", 
-                                    "housenumber": "1412"
+                                    "housenumber": ["1412"]
                                       }
     assert data[-1]["node_refs"] == [ "2199822281", "2199822390",  "2199822392", "2199822369", 
                                     "2199822370", "2199822284", "2199822281"]
 
-
 test()
+"""
+
 ## Mongo Import Instructions (after JSON created) ###################################
 
 # Start a mongod instance using ./mongod
