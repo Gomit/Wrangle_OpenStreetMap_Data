@@ -115,7 +115,7 @@ def shape_element(element):
     # Define other high level items which will populate the dict
     high_level_items = ['id', 'visible', 'type']                                
     # Define other elements of interest                                         
-    elems_of_int = ['amenity', 'cuisine', 'name', 'phone', 'historic', 'peak', 'natural']
+    elems_of_int = ['amenity', 'cuisine', 'name', 'phone', 'historic', 'peak', 'natural', 'sport', 'building', 'leisure', 'shop']
     # If this element is node or way, start pupulating
     if element.tag == "node" or element.tag == "way" :  
         # First field added to node is the tag type
@@ -224,11 +224,4 @@ def test():
 test()
 """
 
-## Mongo Import Instructions (after JSON created) ###################################
 
-# Start a mongod instance using ./mongod
-# Open new terminal window and cd to document folder
-# Move records from json to mongo with this command using mongo import
-# mongod --dbpath ~/data/db
-##### ./mongoimport --db osm --collection osmb_807 --type json --file /Users/frankCorrigan/Udacity/OpenStreetMap-Analysis/OSM_Data_Project/denver-boulder_colorado.osm.json
-# mongoimport --db map --collection map --file data/gothenburg_sweden.osm.json

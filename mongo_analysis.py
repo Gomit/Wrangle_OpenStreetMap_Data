@@ -9,126 +9,168 @@ from pymongo import MongoClient
 
 '''
 This file contains the analysis of open street map data
-using both the Python MongoDB driver and MongoDB Shell.
+using MongoDB Shell.
 '''
 
-# MongoDB Query and Data Analysis ##################################################
+# MongoDB Query ##################################################
 
-# Initiate Mongo client
-client = MongoClient("mongodb://localhost:27017")
-db = client.osm
+#All in terminal
 
-# Using mongo shell look at particular street names for unknown street type in order to clean
-#db.osmb_807.find({ "address.street" : '6001'})
-# Go to http://www.openstreetmap.org/way/223312254 to see that this node is on South Newport Street
-# Change the record in the database
+# Check size of the collections
+ls -lh data/gothenburg_sweden.osm
+## 305M Feb 18 13:55 data/gothenburg_sweden.osm
+ls -lh data/gothenburg_sweden.osm.json
+## 442M Feb 29 10:27 data/gothenburg_sweden.osm.json
 
-db.osmb_807.find({ "address.housenumber" : 'R'})
+# cd into file using the terminal
+cd /Users/merongoitom/Desktop/Nanodegree/DataAnalysisProjects/P3WrangleOpenStreetMapData/Github_Wrangle_OpenStreetMap_Data
 
-"""
-db.osmb_807.update({"address.street" : "6001"}, { $set: { "address.street" : "South Newport Street"} } )
-# Here are the first three changes we make with this method
-'6001' = 'South Newport Street'
-'1601' = 'Central Campus Mall'
-'6001' = 'South Newport Street'
+# Start up mongoDB
+mongod --dbpath ~/data/db
 
-# Using python driver find # of occurances for cities
-result = db.osmb_807.aggregate([{ "$match" : { "address.city" : { "$exists" : 1 } } },
-                                { "$group" : { "_id" : "$address.city",
-                                               "count" : { "$sum" : 1 } } },
-                                { "$sort" : { "count" : -1 } } ] )
+# Import JSON data
+mongoimport --db osm --collection osmb_807 --type json --file /Users/merongoitom/Desktop/Nanodegree/DataAnalysisProjects/P3WrangleOpenStreetMapData/Github_Wrangle_OpenStreetMap_Data/Data/gothenburg_sweden.osm.json
 
-# Using mac terminal look at file sizes
-ls -lh denver-boulder_colorado.osm
-ls -lh denver-boulder_colorado.osm.json
+# Start mongo
+mongo
 
-# Using mongo shell, how many documents?
-db.osmb_807.find().count()
+# Use map as command
+use map
+
+# Check size of the collections
+db.map.dataSize()
+## 789411292
+
+# Number of documents
 db.map.find().count()
+## 3374962
 
-# Using python driver how many nodes and ways?
-result = db.osmb_807.aggregate([{ "$group" : { "_id" : "$type",
-                                               "count" : { "$sum" : 1 } } },
-                                { "$sort" : { "count" : -1 } } ] ) 
+# Number of nodes
+db.map.find({'type' : 'node'}).count()
+## 2995516
 
-# Using python driver, who is the top contributor by # of contributions?
-result = db.osmb_807.aggregate([{ "$group" : { "_id" : "$created.user",
-                                               "count" : { "$sum" : 1 } } },
-                                { "$sort" : { "count" : -1 } },
-                                { "$limit" : 1 } ] )
+# Number of ways
+db.map.find({'type' : 'way'}).count()
+## 379409
 
-# Using mongo shell and python driver, what percent of contributors made only a single contribution?
-db.osmb_807.distinct("created.user").length
-result = db.osmb_807.aggregate( [ { "$group" : { "_id" : "$created.user",
-                                                 "count" : { "$sum" : 1 } } },
-                                  { "$group" : { "_id" : "$count",
-                                                 "num_users" : { "$sum" : 1 } } },
-                                  { "$sort" : { "_id" : 1 } },
-                                  { "$limit" : 1 } ] )
 
-# To get counts for every user so we can create a histogram
-result = db.osmb_807.aggregate( [ { "$group" : { "_id" : "$created.user",
-												            "count" : { "$sum" : 1 } } } ] )
-data = []
-for el in result:
-	data.append(el['count'])
-import matplotlib.pyplot as plt
-data.sort()
-plt.hist(data, bins=50)
-plt.ylabel('people with that # of contributions')
-plt.xlabel('# contributions')
-plt.show()
+# Number of unique users
+db.map.distinct("created.user").length
+## 823
 
-# Using python, how many footways (runnin trails) are there in this map?
-result = db.osmb_807.aggregate( [ { "$match" : { "highway" : "footway" } },
-                                  { "$group" : { "_id" : "footway",
-                                                 "count" : { "$sum" : 1 } } } ] )
+#Top 5 contributer by number of contributions
+db.map.aggregate([{ "$group" : { "_id" : "$created.user",
+                                         "count" : { "$sum" : 1 } } },
+                               { "$sort" : { "count" : -1 } },
+                               { "$limit" : 5 } ] )
+                               
+## { "_id" : "HenrikW", "count" : 1032526 }
+## { "_id" : "johnrobot", "count" : 389700 }
+## { "_id" : "tothod", "count" : 350240 }
+## { "_id" : "archie", "count" : 193716 }
+## { "_id" : "Fringillus", "count" : 139292 }
+                               
+# What percent of unique contributors made only a single contribution
+db.map.aggregate( [ { "$group" : { "_id" : "$created.user",
+                                                "count" : { "$sum" : 1 } } },
+                                 { "$group" : { "_id" : "$count",
+                                                "num_users" : { "$sum" : 1 } } },
+                                 { "$sort" : { "_id" : 1 } },
+                                 { "$limit" : 1 } ] )
+## { "_id" : 2, "num_users" : 136 }
+## percentage 136/823 => 16.5%
 
-# Using python, look at the first footway element to see how its structured
-result = db.osmb_807.aggregate( [ { "$match" : { "highway" : "footway" } },
-                                  { "$limit" : 5 } ] )
+#How many users contributed to 80% of contributions
 
-# The trail goes to a peak, what's the highest peak in our dataset?
-result = db.osmb_807.aggregate( [ { "$match" : { "natural" : "peak" } },
-                                  { "$project" : { "_id" : 0,
-                                                   "Peak" : "$name",
-                                                   "Elevation" : "$ele",
-                                                   "User" : "$created.user"} },
-                                  { "$sort" : { "Elevation" : -1 } } ] )
+# Number of contributions
+db.map.aggregate([{ "$group" : { "_id" : "created.user","count" : { "$sum" : 1 } } } ] )
+## { "_id" : "created.user", "count" : 3374962 }
 
-# Using mongo shell, how many peaks are there in the dataset?
- db.osmb_807.find({"natural" : "peak"}).count()
+# 80% of all contributions
+## 3374962*0.8 => 2699970
 
-# Other fun queries
-
-# To get top amenities
-result = db.osmb_807.aggregate( [ { "$match" : { "amenity" : { "$exists" : 1 } } },
-                                  { "$group" : { "_id" : "$amenity",
-                                                 "count" : { "$sum" : 1 } } },
-                                  { "$sort" : { "count" : -1} },
-                                  { "$limit" : 10 } ] )
-
-# Tagged as natural
-result = db.osmb_807.aggregate( [ { "$match" : { "natural" : { "$exists" : 1 } } },
-                                  { "$group" : { "_id" : "$natural",
-                                                 "count" : { "$sum" : 1 } } },
-                                  { "$sort" : { "count" : -1 } } ] )
-
-# This is popular religion
-result = db.osmb_807.aggregate( [ { "$match" : { "amenity" : { "$exists" : 1 },
-                                                 "amenity" : "place_of_worship" } },
-                                  { "$group" : { "_id" : "$religion",
-                                                 "count" : { "$sum" : 1 } } },
-                                  { "$sort" : { "count" : -1} },
-                                  { "$limit" : 5 } ] )
-
-# This is popular cuisine.
-result = db.osmb_807.aggregate( [ { "$match" : { "amenity" : { "$exists" : 1 }, "amenity":"restaurant"} },
-                                  { "$group" : { "_id" : "$cuisine",
-                                                 "count" : { "$sum" : 1 } } },
-                                  { "$sort" : { "count" : -1} },
-                                  { "$limit" : 10 } ] )
-                                 
+#Top 15 contributer
+db.map.aggregate([{ "$group" : { "_id" : "$created.user",
+                                         "count" : { "$sum" : 1 } } },
+                               { "$sort" : { "count" : -1 } },
+                               { "$limit" : 15 } ] )
 """
+    { "_id" : "HenrikW", "count" : 1032526 }
+    { "_id" : "johnrobot", "count" : 389700 }
+    { "_id" : "tothod", "count" : 350240 }
+    { "_id" : "archie", "count" : 193716 }
+    { "_id" : "Fringillus", "count" : 139292 }
+    { "_id" : "Niklas Gustavsson", "count" : 127446 }
+    { "_id" : "tomasy", "count" : 98234 }
+    { "_id" : "uebk", "count" : 82848 }
+    { "_id" : "Micket", "count" : 63024 }
+    { "_id" : "magol", "count" : 59226 }
+    { "_id" : "kentp", "count" : 58888 }
+    { "_id" : "fatal", "count" : 52612 }
+    { "_id" : "elk finder", "count" : 49526 }
+    { "_id" : "Ojan", "count" : 35616 }
+    { "_id" : "bengibollen", "count" : 33826 }
+"""
+## The top 15 contributers (1,8%) stands for more then 80% of all contributions
+## 2732894 Sum contributions by top 15 contributers 
+
+# Top city mentions in this map
+db.map.aggregate([{ "$match" : { "address.city" : { "$exists" : 1 } } },
+                               { "$group" : { "_id" : "$address.city",
+                                              "count" : { "$sum" : 1 } } },
+                               { "$sort" : { "count" : -1 } } ] )
+## { "_id" : "Göteborg", "count" : 9471 }
+## { "_id" : "Hisings Backa", "count" : 4952 }
+## { "_id" : "Västra frölunda", "count" : 1909 }
+
+# Top 3 sport mentions in this map
+db.map.aggregate([{ "$match" : { "sport" : { "$exists" : 1 } } },
+                               { "$group" : { "_id" : "$sport",
+                                              "count" : { "$sum" : 1 } } },
+                               { "$sort" : { "count" : -1 } },
+                               { "$limit" : 3 } ] )
+## { "_id" : "soccer", "count" : 342 }
+## { "_id" : "tennis", "count" : 109 }
+## { "_id" : "swimming", "count" : 31 }
+
+# Top amenities
+db.map.aggregate( [ { "$match" : { "amenity" : { "$exists" : 1 } } },
+                    { "$group" : { "_id" : "$amenity",
+                                   "count" : { "$sum" : 1 } } },
+                    { "$sort" : { "count" : -1} },
+                    { "$limit" : 10 } ] )
+"""
+    { "_id" : "parking", "count" : 8000 }
+    { "_id" : "restaurant", "count" : 1266 }
+    { "_id" : "school", "count" : 1056 }
+    { "_id" : "bench", "count" : 740 }
+    { "_id" : "kindergarten", "count" : 702 }
+    { "_id" : "post_box", "count" : 656 }
+    { "_id" : "recycling", "count" : 632 }
+    { "_id" : "cafe", "count" : 580 }
+    { "_id" : "fast_food", "count" : 544 }
+    { "_id" : "waste_basket", "count" : 394 }
+"""
+
+# Top cuisines
+db.map.aggregate( [ { "$match" : { "amenity" : { "$exists" : 1 }, "amenity":"cafe"} },
+                    { "$group" : { "_id" : "$cuisine",
+                                   "count" : { "$sum" : 1 } } },
+                    { "$sort" : { "count" : -1} },
+                    { "$limit" : 10 } ] )
+"""
+    { "_id" : null, "count" : 514 }
+    { "_id" : "pizza", "count" : 124 }
+    { "_id" : "regional", "count" : 76 }
+    { "_id" : "sushi", "count" : 74 }
+    { "_id" : "thai", "count" : 72 }
+    { "_id" : "indian", "count" : 60 }
+    { "_id" : "italian", "count" : 58 }
+    { "_id" : "chinese", "count" : 44 }
+    { "_id" : "asian", "count" : 30 }
+    { "_id" : "burger", "count" : 18 }
+"""
+
+
 
 
