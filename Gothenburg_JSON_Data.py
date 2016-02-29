@@ -67,7 +67,7 @@ expected_cities = ["Agnesberg",     "Angered",       "Askim",        u"Asper\xf6
                    "Askim",         u"\xd6cker\xf6", "Olofstorp"] # List of the cities we expect in Gothenburg municipality
 #Cities in correct spelling
 #expected_cities = ["Agnesberg","Angered","Askim","Asperö","Billdal","Bohus","Brännö","Donsö","Gunnilse","Göteborg","Hisings backa","Hisings kärra","Hovås","Kungälv","Köpstadsö","Mölndal","Nödinge","Olofstorp","Styrsö","Säve","Torslanda","Vrångö","Västra frölunda","Öckerö"] 
-
+ 
 
 mapping_city = { "Gothenburg"            : "Göteborg",                           
                  "436 58"                : u"Hov\xe5s",                          
