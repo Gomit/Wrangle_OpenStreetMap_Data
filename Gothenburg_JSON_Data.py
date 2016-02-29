@@ -11,27 +11,47 @@ import codecs
 import json
 import pprint
 '''
+Using the experimenst conducted in audit.py, 
+errors that need correction to fit data 
+model have been identified.
 This file takes an osm files, parses it, and
-writes each element into a JSON file. Using the audit.py 
-file, potential errors that need correction to fit data 
-model have been identified. The flow of functions ...
-process_map uses --> shape_element uses --> everything else
-These pieces of code can be used for element searching and Shaping
-sample = "<node changeset="830792" id="335986968" lat="39.3419172" lon="-104.746838" timestamp="2009-01-24T17:35:23Z" uid="91266" user="HurricaneCoast" version="2">
-    <tag k="addr:city" v="Franktown" />
-    <tag k="created_by" v="Potlatch 0.10f" />
-    <tag k="addr:street" v="Street G" />
-    <tag k="addr:postcode" v="80116" />
-</node>"
-sample = ET.fromstring(sample)
-for _, element in ET.iterparse(boulder_osm):
-    for child in element:
-        if child.tag == 'tag':
-            if child.attrib['k'] == 'addr:street':
-                if child.attrib['v'].rsplit(None, 1)[-1] == '106':
-                #if child.attrib['v'].startswith('County Rd'):
-                    for child in element:
-                        print child.attrib
+writes each element into a JSON file using the 
+audit functions created in audit.py. 
+The output is a list of dictionaries
+that look like this:
+
+{
+"id": "2406124091",
+"type: "node",
+"visible":"true",
+"created": {
+          "version":"2",
+          "changeset":"17206049",
+          "timestamp":"2013-08-03T16:43:42Z",
+          "user":"linuxUser16",
+          "uid":"1219059"
+        },
+"pos": [41.9757030, -87.6921867],
+"address": {
+          "housenumber": "5157",
+          "postcode": "60625",
+          "street": "North Lincoln Ave"
+        },
+"amenity": "restaurant",
+"cuisine": "mexican",
+"name": "La Cabana De Don Luis",
+"phone": "1 (773)-271-5176"
+}
+
+Sample code when shaping elements:
+<node id="757860928" visible="true" version="2" changeset="5288876" timestamp="2010-07-22T16:16:51Z" user="uboot" uid="26299" lat="41.9747374" lon="-87.6920102">
+  <tag k="addr:city" v="Chicago"/>
+  <tag k="addr:country" v="US"/>
+  <tag k="addr:housenumber" v="4874"/>
+  <tag k="addr:postcode" v="60625"/>
+  <tag k="addr:state" v="Illinois"/>
+  <tag k="addr:street" v="N. Lincoln Ave"/>
+ </node>
 '''
 
 #small_boulder = 'data/gothenburg_sweden.osm'
@@ -192,6 +212,7 @@ def create_JSON():
 create_JSON()
 
 """
+# This test function tests this file on a sample osm data taken from Udacity.
 def test():
     # NOTE: if you are running this code on your computer, with a larger dataset, 
     # call the process_map procedure with pretty=False. The pretty=True option adds 
