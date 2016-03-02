@@ -5,8 +5,6 @@ Created on Sun Feb 28 19:00:17 2016
 @author: merongoitom
 """
 
-from pymongo import MongoClient
-
 '''
 This file contains the analysis of open street map data
 using MongoDB Shell.
@@ -16,14 +14,14 @@ using MongoDB Shell.
 
 #All in terminal
 
+# cd into file using the terminal
+cd /Users/merongoitom/Desktop/Nanodegree/DataAnalysisProjects/P3WrangleOpenStreetMapData/Github_Wrangle_OpenStreetMap_Data
+
 # Check size of the collections
 ls -lh data/gothenburg_sweden.osm
 ## 305M Feb 18 13:55 data/gothenburg_sweden.osm
 ls -lh data/gothenburg_sweden.osm.json
 ## 442M Feb 29 10:27 data/gothenburg_sweden.osm.json
-
-# cd into file using the terminal
-cd /Users/merongoitom/Desktop/Nanodegree/DataAnalysisProjects/P3WrangleOpenStreetMapData/Github_Wrangle_OpenStreetMap_Data
 
 # Start up mongoDB
 mongod --dbpath ~/data/db
@@ -58,7 +56,7 @@ db.map.find({'type' : 'way'}).count()
 db.map.distinct("created.user").length
 ## 823
 
-#Top 5 contributer by number of contributions
+#Top 5 contributor by number of contributions
 db.map.aggregate([{ "$group" : { "_id" : "$created.user",
                                          "count" : { "$sum" : 1 } } },
                                { "$sort" : { "count" : -1 } },
@@ -89,7 +87,7 @@ db.map.aggregate([{ "$group" : { "_id" : "created.user","count" : { "$sum" : 1 }
 # 80% of all contributions
 ## 3374962*0.8 => 2699970
 
-#Top 15 contributer
+#Top 15 contributor
 db.map.aggregate([{ "$group" : { "_id" : "$created.user",
                                          "count" : { "$sum" : 1 } } },
                                { "$sort" : { "count" : -1 } },
@@ -111,8 +109,8 @@ db.map.aggregate([{ "$group" : { "_id" : "$created.user",
     { "_id" : "Ojan", "count" : 35616 }
     { "_id" : "bengibollen", "count" : 33826 }
 """
-## The top 15 contributers (1,8%) stands for more then 80% of all contributions
-## 2732894 Sum contributions by top 15 contributers 
+## The top 15 contributors (1,8%) stands for more than 80% of all contributions
+## 2732894 Sum contributions by top 15 contributors 
 
 # Top city mentions in this map
 db.map.aggregate([{ "$match" : { "address.city" : { "$exists" : 1 } } },

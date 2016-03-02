@@ -124,11 +124,20 @@ def update_post_code(name):
     if words.isdigit() == False or len(words) != 5:                             
         if words in mapping_post_code.keys():                                             
             words = mapping_post_code[words]                                    
-            return words                                                      
-    return words 
+            return words
+    count = 0
+    result = ''
+    for a in words:
+        count +=1
+        if count == 3:
+            result+=a+' '
+        else:
+            result +=a
+    return result                                                      
+
 
 # Uncomment the block below to see changes made
-"""                                                                            
+                                                                            
 def test(audit,update):                                                       
     st_types = audit(OSMFILE)
     #pprint.pprint(dict(st_types))
@@ -136,6 +145,9 @@ def test(audit,update):
     for st_type, ways in st_types.iteritems():
         for name in ways:
             words = name.replace(" ", "")
+            #better_name = update(words)
+            #print words, "=>", better_name
+            
             if words.isdigit() == False or len(words) != 5:
                 better_name = update(words)
                 print words, "=>", better_name
@@ -144,7 +156,7 @@ def test(audit,update):
             #    print words                                                    
                 
 test(audit_post_code,update_post_code)
-"""
+
 #================================================================
  #Audit house numbers
 #================================================================

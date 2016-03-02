@@ -77,10 +77,10 @@ mapping_city = { "Gothenburg"            : "Göteborg",
                  u"Hisings K\xe4rra"     : u"Hisings k\xe4rra"
                  }# Map incorrect city names to desired
             
-mapping_post_code = { "SE-42671": "42671",                                      
-                     u"Hov\xe5s": "43650",                                              
-                     "12"       : "41274",                                           
-                     "417631"   : "41763"                                        
+mapping_post_code = { "SE-42671": "426 71",                                      
+                     u"Hov\xe5s": "436 50",                                              
+                     "12"       : "412 74",                                           
+                     "417631"   : "417 63"                                        
                      }# Map incorrect postcodes to desired
 
 ## Update Functions #################################################
@@ -92,8 +92,16 @@ def update_postcode(name):
     if code.isdigit() == False or len(code) != 5:                               
         if code in mapping_post_code.keys():                                            
             code = mapping_post_code[code]                                      
-            return code                                                         
-    return code 
+            return code
+    count = 0
+    result = ''
+    for a in code:
+        count +=1
+        if count == 3:
+            result+=a+' '
+        else:
+            result +=a
+    return result                                                         
 
 #Check for abbreviations and correct if necessary
 def update_house_number(this_house_number):                                       
